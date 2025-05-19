@@ -1,0 +1,300 @@
+# D Flip-Flop with synchronous reset:
+
+module d_ff (q, qb, d, clk, rst);
+output reg q;
+output qb;
+input d, clk, rst;
+always @(posedge clk)
+begin
+if (rst)
+q = 0;
+else
+q = d;
+end
+assign qb = ~q;
+endmodule
+
+# Testbench for D Flip-Flop with synchronous:
+
+module d_ff_test;
+reg clk, rst, d;
+wire q, qb;
+d_ff d1(q, qb, d, clk, rst);
+initial
+begin
+$monitor (“time = %0d”, $time, “ns”, “rst =”, rst, “d =”, d, “q =”, q, “qb =”, qb);
+#40 $finish;
+end
+initial
+clk = 0;
+always
+#5 clk = ~clk;
+initial
+begin
+rst = 1; d = 0;
+#10 rst = 0;
+#10 d = 1;
+#10 rst = 1;
+end
+endmodule
+
+# D Flip-Flop with asynchronous reset:
+
+module dff (q, qb, d, clk, rst);
+output reg q;
+output qb;
+input d, clk, rst;
+always @(posedge clk, negedge rst)
+begin
+if (!rst)
+q = 0;
+else
+q = d;
+end
+assign qb = ~q;
+endmodule
+
+# Testbench for D Flip-Flop with asynchronous:
+
+module dff_test;
+reg d, rst, clk;
+wire q, qb;
+dff d1 (q, qb, d, clk, rst);
+initial
+begin
+$monitor ("time=%0d", $time, "ns", "rst =", rst, "d =", d, "q =", q, "qb =", qb);
+#40 $finish;
+end
+initial
+begin
+d = 0;
+clk = 0;
+end
+always
+#5 clk = ~clk;
+initial
+begin
+rst = 0;
+#10 rst =1;
+#10 d =1;
+#10 rst = 0;
+end
+endmodule
+
+----------------------------------------------------------------------------------
+# SR Flip-Flop with synchronous reset:
+
+module sr_ff (q, qb, s, r, clk, rst);
+output reg q;
+output qb;
+input s, r, clk, rst;
+always @(posedge clk)
+begin
+if (rst)
+q = 0;
+else
+if (s == 0 && r == 0)
+q = q;
+else
+if (s == 0 && r == 1)
+q = 0;
+else
+if (s == 1 && r == 0)
+q = 1;
+else
+if (s == 1 && r == 1)
+q = 1’bx;
+end
+assign qb = ~q;
+endmodule
+
+# Testbench for SR Flip-Flop with synchronous reset:
+
+module sr_ff_test;
+reg s, r, clk, rst;
+wire q, qb;
+sr_ff s1(q, qb, s, r, clk, rst);
+initial
+begin
+$monitor (“time = %0d”, $time, “ns”, “s =”, s, “r =”, r, “rst =”, rst, “q =”, q, “qb =”, qb);
+#80 $finish;
+end
+initial
+clk = 1’b0;
+always
+#5 clk = ~clk;
+initial
+begin
+rst = 1; s = 1; r = 0;
+#10; rst = 0;
+#10; s = 0; r = 0;
+#10; s = 0; r = 1;
+#10; s = 1; r = 0;
+#10; s = 1; r = 1;
+#10; s = 1; r = 0;
+#10; rst = 1;
+end
+endmodule
+
+# SR Flip-Flop with asynchronous reset:
+
+module srff (q, qb, s, r, clk, rst);
+output reg q;
+output qb;
+input s, r, clk, rst;
+always @(posedge clk, negedge rst)
+begin
+if (!rst)
+q = 0;
+else
+if (s == 0 && r == 0)
+q = q;
+else
+if (s == 0 && r == 1)
+q = 0;
+else
+if (s == 1 && r == 0)
+q = 1;
+else
+if (s == 1 && r == 1)
+q = 1’bx;
+end
+assign qb = ~q;
+endmodule
+
+# Testbench for SR Flip-Flop with asynchronous reset:
+
+module srff_test;
+reg s, r, clk, rst;
+wire q, qb;
+srff s1(q, qb, s, r, clk, rst);
+initial
+begin
+$monitor (“time = %0d”, $time, “ns”, “s =”, s, “r =”, r, “rst =”, rst, “q =”, q, “qb =”, qb);
+#80 $finish;
+end
+initial
+clk = 1’b0;
+always
+#5 clk = ~clk;
+initial
+begin
+rst = 0; s = 1; r = 0;
+#10; rst = 1;
+#10; s = 0; r = 0;
+#10; s = 0; r = 1;
+#10; s = 1; r = 0;
+#10; s = 1; r = 1;
+#10; s = 1; r = 0;
+#10; rst = 0;
+end
+endmodule
+
+-------------------------------------------------------------------
+# JK Flip-Flop with synchronous reset:
+
+module jk_ff (q, qb, j, k, clk, rst);
+output reg q;
+output qb;
+input j, k, clk, rst;
+always @(posedge clk)
+begin
+if (rst)
+q = 0;
+else
+if (j == 0 && k == 0)
+q = q;
+else
+if (j == 0 && k == 1)
+q = 0;
+else
+if (j == 1 && k == 0)
+q = 1;
+else
+if (j == 1 && k == 1)
+q = ~q;
+end
+assign qb = ~q;
+endmodule
+
+# Testbench for JK Flip-Flop with synchronous reset:
+
+module jk_ff_test;
+reg j, k, clk, rst;
+wire q, qb;
+jk_ff j1(q, qb, j, k, clk, rst);
+initial
+begin
+$monitor (“time = %0d”, $time, “ns”, “j =”, j, “k =”, k, “rst =”, rst, “q =”, q, “qb =”, qb);
+#80 $finish;
+end
+initial
+clk = 1’b0;
+always
+#5 clk = ~clk;
+initial
+begin
+rst = 1; j = 1; k = 0;
+#10; rst = 0;
+#10; j = 0; k = 0;
+#10; j = 0; k = 1;
+#10; j = 1; k = 0;
+#10; j = 1; k = 1;
+#10; j = 1; k = 0;
+#10; rst = 1;
+end
+endmodule
+
+# JK Flip-Flop with asynchronous reset:
+
+module jkff (q, qb, j, k, clk, rst);
+output reg q;
+output qb;
+input j, k, clk, rst;
+always @(posedge clk, negedge rst)
+begin
+if (!rst)
+q = 0;
+else
+if (j == 0 && k == 0)
+q = q;
+else
+if (j == 0 && k == 1)
+q = 0;
+else
+if (j == 1 && k == 0)
+q = 1;
+else
+if (j == 1 && k == 1)
+q = ~q;
+end
+assign qb = ~q;
+endmodule
+
+# Testbench for JK Flip-Flop with asynchronous reset:
+
+module jkff_test;
+reg j, k, clk, rst;
+wire q, qb;
+jkff j1(q, qb, j, k, clk, rst);
+initial
+begin
+$monitor (“time = %0d”, $time, “ns”, “j =”, j, “k =”, k, “rst =”, rst, “q =”, q, “qb =”, qb);
+#80 $finish;
+end
+initial
+clk = 1’b0;
+always
+#5 clk = ~clk;
+initial
+begin
+rst = 0; j = 1; k = 0;
+#10; rst = 1;
+#10; j = 0; k = 0;
+#10; j = 0; k = 1;
+#10; j = 1; k = 0;
+#10; j = 1; k = 1;
+#10; j = 1; k = 0;
+#10; rst = 0;
+end
+endmodule

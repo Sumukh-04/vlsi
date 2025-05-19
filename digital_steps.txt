@@ -1,0 +1,111 @@
+# Non-GUI
+create directory
+mkdir name
+cd name
+vi name.v
+Insert key
+To save escape(:wq!)
+
+vi name_test.v
+ncvlog name.v -mess
+ncvlog name_test.v -mess
+
+ncelab worklibname -mess
+ncsim worklibname
+
+# GUI (Synthesis)
+nclaunch
+delete contents in worklib
+2nd button - Launch Verilog compiler button for both the codes
+3rd button - Launch elaborator for test bench
+4th button - snapshots->simulator(get waveform and rtl schematic)
+
+#Then go back to the terminal
+genus -gui
+read_lib /home/installs/cad/slow.lib
+read_hdl name.v
+
+elaborate
+synthesize -to_mapped
+
+report area
+report power
+report gates
+report timing -unconstrained
+exit
+
+------------------------------------------------------------------------------
+Creating an SDC File:
+
+-> In terminal type “gedit alu_top.sdc” to create an SDC file.
+
+set_input_delay -max 0.2 [get_ports “a”]
+set_input_delay -max 0.25 [get_ports “b”]
+set_output_delay -max 0.2 [get_ports “alu_out”]
+
+Performing Synthesize:
+
+-> The following are commands to perform synthesize
+
+genus -gui
+read_lib /home/install/cad/slow.lib
+read_hdl alu.v
+elaborate
+read_sdc alu_top.sdc
+
+set_db syn_generic_effort medium
+set_db syn_map_effort medium
+set_db syn_opt_effort medium
+syn_generic
+syn_map
+syn_opt
+
+# write_hdl > alu_netlist.v
+# write_sdc > alu_top.sdc
+
+report_power
+report_gates
+report_timing -unconstrained
+report_area
+report_qor -levels_of_logic -power -exclude_constant_nets
+
+-----------------------------------------------------------------------------
+Creating an SDC File: (4-bit ADDER)
+
+-> In terminal type “gedit constraints_top.sdc” to create an SDC file. (This file is common
+for all programs)
+
+-> The SDC file must contain the following commands.
+
+create_clock -name clk -period 2 -waveform {0 1} [get_ports "clk"]
+set_input_delay -max 0.8 -clock clk [all_inputs]
+set_output_delay -max 0.8 -clock clk [all_outputs]
+set_input_transition 0.2 [all_inputs]
+set_max_capacitance 30 [get_ports]
+set_clock_transition -rise 0.1 [get_clocks “clk”]
+set_clock_transition -fall 0.1 [get_clocks “clk”]
+set_clock_uncertainty 0.01 [get_ports “clk”]
+set_input_transition 0.12 [all_inputs]
+set_load 0.15 [all_outputs]
+set_max_fanout 30.00 [current_design]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

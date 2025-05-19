@@ -1,0 +1,77 @@
+// create directory
+mkdir name
+cd name
+virtuoso &
+
+file -> New -> Library
+Select attach to an existing technology library
+give inverter and press ok and then select gpdk180 and then ok
+
+file -> New -> cellview
+give name of the exp(inverter)
+
+create -> instance -> browse -> gpdk180 -> nmos and pmos (finger width = Wp
+create -> pin (vin vdd gnd) direction-input
+create -> pin (vout) direction-output
+create -> wire(narrow) complete the connections
+connect the middle of the nmos and pmos to their gnd and vdd
+check and save
+
+create -> cellview -> from cellview
+left pins - vin | top pins - vdd | right pins - vout | bottom pins - gnd
+and click ok
+change the name to inverter and then check and save
+
+// for test circuit
+file -> New -> cellview
+give the name as inverter_test and click ok and go to instance and then select library_name and then click on inverter and place it
+instance -> Then select analogLib and then vpulse (v1=0,v2=1.8,period=20n,pulse width=10n,rise and fall time=1n) and place it
+instance -> Then select analogLib and then vdc (DC voltage=1.8) and place it
+instance -> Then select analogLib and then cap (capacitance=0.1pF) and place it and then add ground
+then add wires and name the wire by right clicking on the wire (vin and vout)
+
+// analysis
+launch -> ADE L -> setup -> model libraries -> unselect 45 and 90 -> ok
+analyses -> choose
+tran (stop time=100n and select moderate) -> apply
+dc (select Save DC operating point, component parameter ->select component ->select vpulse ->double-click on dc,sweep range start=0 and stop=1.8) -> apply
+
+outputs ->to be plotted->select on design->on the ckt click on the I/p and o/p line
+then go to adel window -> edit variable symbol ->copy from -> select Wp->value=2u->apply and ok
+tools ->parametric analysis ->add variable ->select Wp(from: 1u , To: 4u, total steps=4) and then click run
+click on transient analysis graph ->click on split all strips button
+
+//calculate
+tools->calculator-> show functions button ->click on delay->clear the signal values->go to graph->right click on vin->send to->calculator->paste it on signal 1 and same steps for vout and signal 2
+
+threshold value 1 and 2=0.9
+edge type 1:rising and edge type 1:falling ->apply ->click on evaluate the buffer and display the results in a table
+edge type 1:falling and edge type 1:rising ->apply ->click on evaluate the buffer and display the results in a table and note down
+
+functions panel->click all -> click intersect->clear the signal values->go to graph->right click on vin->send to->calculator->paste it on signal 1 and same steps for vout and signal 2 ->apply and ok ->click on evaluate the buffer and display the results in a table and note down
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
