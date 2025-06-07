@@ -1,0 +1,60 @@
+Inverter
++----------------------+------------------------+----------------------------------------------+
+| Type                 | Subtype                | Details                                      |
++----------------------+------------------------+----------------------------------------------+
+| Transient            | trans                  | Stop time = 100n, moderate                   |
+| DC                   | DC Analysis            | Save DC Operating point                      |
+| Sweep Variable       |                        |                                              |
+| Component Parameter  |                        | Component Name = Select input signal (Vpulse)|
+|                      |                        | Parameter Name = dc                          |
+| Sweep Range          |                        |                                              |
+| Start – Stop         |                        | Start = 0, Stop = 1.8                        |
++----------------------+------------------------+----------------------------------------------+
+
+NOR GATE
++----------------------+------------------------+----------------------------------------------+
+| Type                 | Subtype                | Details                                      |
++----------------------+------------------------+----------------------------------------------+
+| Transient            | trans                  | Stop time = 50n, moderate                    |
++----------------------+------------------------+----------------------------------------------+
+
+CS AMP
++------------------------+------------------------+---------------------------------------------------------------+
+| Type                  | Subtype                | Details                                                       |
++------------------------+------------------------+---------------------------------------------------------------+
+| Transient             | trans                  | Stop time = 5m, moderate                                      |
+| DC                    | DC Analysis            | Save DC Operating point                                       |
+|                       | Sweep Variable         |                                                               |
+| 		        | Component Parameter    | Component Name = Select input signal component (Vpulse)       
+|                       |                        | Parameter Name = dc                                           |
+|                       | Sweep Range            |                                                               |
+|                       | Start – Stop           | Sweep Type = Linear, Start = -5, Stop = 5, Step size = 10m V  |
+| AC                    | Sweep Range            |                                                               |
+|                       | Start – Stop           | Sweep Type = Logarithm, Start = 10, Stop = 10 G,              |
+|                       |                        | Points Per Decade = 10                                        |
++------------------------+------------------------+---------------------------------------------------------------+
+
+OP AMP
++------------------------+------------------------+------------------------------------------------------------+
+| Type                  | Subtype                | Details                                                    |
++------------------------+------------------------+------------------------------------------------------------+
+| Transient             | trans                  | Stop time = 5m, moderate                                   |
+| DC                    | DC Analysis            | Save DC Operating point                                    |
+|                       | Sweep Variable         |                                                            |
+|                       | Component Parameter    | Component Name = Select input signal component (Vpulse)    |
+|                       |                        | Parameter Name = dc                                        |
+|                       | Sweep Range Start–Stop | Start = -5, Stop = 5                                       |
+| AC                    | Sweep Range            |                                                            |
+|                       |                        | Sweep Type = Automatic, Start = 100, Stop = 10G            |
++------------------------+------------------------+------------------------------------------------------------+
+
+BOOLEAN
++-----------+---------+---------------------------+
+| Type      | Subtype | Details                   |
++-----------+---------+---------------------------+
+| Transient | trans   | Stop time = 200ns, moderate 
++-----------+---------+---------------------------+
+
+
+
+
