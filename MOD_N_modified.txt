@@ -1,0 +1,35 @@
+MOD N VERILOG
+
+module modn_counter(clk, rst, en, count);
+input clk, rst, en;
+output reg [3:0] count;
+parameter MODULO = 10;
+always @(posedge clk or posedge rst) 
+begin
+    if (rst)
+        count <= 0;
+    else if (en) begin
+        if (count == MODULO - 1)
+            count <= 0;
+        else
+            count <= count + 1;
+    end
+end
+endmodule
+
+MOD N TB
+
+module tb_modn_counter;
+reg clk, rst, en;
+wire [3:0] count;
+modn_counter uut ( .clk(clk),  .rst(rst), .en(en), .count(count) );
+always #5 clk = ~clk;
+initial begin
+    clk = 0; rst = 1; en = 0;
+    #10 rst = 0; en = 1;
+    #100 $finish;
+end
+initial begin
+    $monitor("Time: %t | Count: %d", $time, count);
+end
+endmodule
