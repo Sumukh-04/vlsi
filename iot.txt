@@ -257,50 +257,60 @@ void loop() {
 #include <WiFi.h> 
 #include <WiFiClient.h> 
 #include <DHT.h> 
+
 const char* ssid = "IOT 1"; 
 const char* password = "12345678"; 
+
 #define DHT_PIN 32 // Try GPIO 4 or 5 if 32 fails 
 #define DHT_TYPE DHT11 
 DHT dht(DHT_PIN, DHT_TYPE); 
+
 WiFiServer server(8888); 
+
 void setup() { 
 Serial.begin(115200); 
 delay(1000); 
 Serial.print("Connecting to WiFi"); 
 WiFi.begin(ssid, password); 
+
 while (WiFi.status() != WL_CONNECTED) { 
 delay(500); 
 Serial.print("."); 
 } 
+
 Serial.println("\nConnected to WiFi"); 
 Serial.print("ESP32 IP Address: "); 
 Serial.println(WiFi.localIP());  
+
 server.begin(); 
 Serial.println("TCP Server started on port 8888"); 
 dht.begin(); 
 delay(2000); // Give sensor time to stabilize 
 } 
+
 void loop() { 
 WiFiClient client = server.available(); 
 if (client) { Serial.println(" New TCP client connected"); 
 while (client.connected()) { 
 if (client.available()) { 
-String request = client.readStringUntil('\r'); 
-client.flush(); 
-Serial.print(" Request: "); 
-Serial.println(request); 
-if (request.indexOf("/humidity") != -1) { 
-float humidity = dht.readHumidity(); 
-float temperature = dht.readTemperature(); 
-if (isnan(humidity) || isnan(temperature)) { 
-Serial.println("Failed to read from DHT sensor"); 
-client.println("Failed to read from DHT sensor"); 
-} else { 
-Serial.printf("Humidity: %.2f%% Temperature: %.2f°C\n", humidity, temperature); 
-client.printf("Humidity: %.2f%% Temperature: %.2f°C\n", humidity, temperature); 
-} 
-} else { 
-client.println("Invalid request. Use '/humidity'");
+  String request = client.readStringUntil('\r'); 
+  client.flush(); 
+
+  Serial.print(" Request: "); 
+  Serial.println(request); 
+    if (request.indexOf("/humidity") != -1) { 
+      float humidity = dht.readHumidity(); 
+      float temperature = dht.readTemperature(); 
+
+        if (isnan(humidity) || isnan(temperature)) { 
+          Serial.println("Failed to read from DHT sensor"); 
+          client.println("Failed to read from DHT sensor"); 
+        } else { 
+            Serial.printf("Humidity: %.2f%% Temperature: %.2f°C\n", humidity, temperature); 
+            client.printf("Humidity: %.2f%% Temperature: %.2f°C\n", humidity, temperature); 
+        } 
+  } else { 
+  client.println("Invalid request. Use '/humidity'");
 } 
 client.stop(); 
 Serial.println("Client disconnected\n"); 
@@ -393,32 +403,40 @@ void loop() {
 #include <WiFi.h> 
 #include <WiFiUdp.h> 
 #include <DHT.h> 
+
 const char* ssid = "IOT 1"; 
 const char* password = "12345678"; 
+
 #define DHT_PIN 32 
 #define DHT_TYPE DHT11 
 DHT dht(DHT_PIN, DHT_TYPE); 
+
 WiFiUDP udp; 
 #define UDP_PORT 5000 
+
 void setup() { 
 Serial.begin(115200); 
 delay(1000); 
 Serial.println("Starting ESP32 DHT + UDP Server");
  WiFi.begin(ssid, password); 
-Serial.print("Connecting to WiFi"); 
+Serial.print("Connecting to WiFi");
+
 int attempts = 0; 
 while (WiFi.status() != WL_CONNECTED && attempts < 20) { 
 delay(500); 
 Serial.print("."); 
 attempts++; 
 } 
+
 if (WiFi.status() != WL_CONNECTED) { 
 Serial.println("\nFailed to connect to WiFi. Restarting..."); 
 ESP.restart(); 
 } 
+
 Serial.println("\nConnected to WiFi"); 
 Serial.print("ESP32 IP Address: "); 
 Serial.println(WiFi.localIP()); 
+
 udp.begin(UDP_PORT); 
 Serial.printf("UDP server started on port %d\n", UDP_PORT); 
 dht.begin(); 
@@ -427,35 +445,39 @@ delay(2000);
 void loop() { 
 float humidity = dht.readHumidity(); 
 float temperature = dht.readTemperature(); 
+
 if (isnan(humidity) || isnan(temperature)) { 
-Serial.println(" Failed to read from DHT sensor!"); 
+  Serial.println(" Failed to read from DHT sensor!"); 
 } 
 else { 
-Serial.printf(" Humidity: %.2f%% Temperature: %.2f°C\n", humidity, temperature); 
+  Serial.printf(" Humidity: %.2f%% Temperature: %.2f°C\n", humidity, temperature); 
 } 
+
 int packetSize = udp.parsePacket(); 
 if (packetSize) { 
-Serial.println("UDP packet received!"); 
-char packetData[packetSize + 1]; 
-udp.read(packetData, packetSize); 
-packetData[packetSize] = '\0'; 
-String request = String(packetData); 
-Serial.print(" Received UDP request: "); 
-Serial.println(request); 
-if (request == "get_humidity") { 
-udp.beginPacket(udp.remoteIP(), udp.remotePort()); 
-udp.printf("Humidity: %.2f%% Temperature: %.2f°C", humidity, temperature); 
-udp.endPacket(); 
-Serial.println("Sent humidity and temperature via UDP."); 
+  Serial.println("UDP packet received!"); 
+  char packetData[packetSize + 1]; 
+  udp.read(packetData, packetSize); 
+  packetData[packetSize] = '\0'; 
+  String request = String(packetData); 
+  Serial.print(" Received UDP request: "); 
+  Serial.println(request); 
+
+  if (request == "get_humidity") { 
+    udp.beginPacket(udp.remoteIP(), udp.remotePort()); 
+    udp.printf("Humidity: %.2f%% Temperature: %.2f°C", humidity, temperature); 
+    udp.endPacket(); 
+    Serial.println("Sent humidity and temperature via UDP."); 
+  } 
+  else { 
+    udp.beginPacket(udp.remoteIP(), udp.remotePort()); 
+    udp.println("Invalid command. Use 'get_humidity'"); 
+    udp.endPacket(); 
+    Serial.println("Sent error response via UDP."); 
+  } 
 } 
-else { 
-udp.beginPacket(udp.remoteIP(), udp.remotePort()); 
-udp.println("Invalid command. Use 'get_humidity'"); 
-udp.endPacket(); 
-Serial.println("Sent error response via UDP."); 
-} 
-} 
-delay(2000);}
+delay(2000);
+}
 
 
 
